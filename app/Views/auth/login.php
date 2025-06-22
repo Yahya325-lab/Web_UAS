@@ -41,6 +41,8 @@
         <button type="submit" class="btn btn-primary w-100">Login</button>
     </form>
 </div>
+<p class="text-center mt-3">Belum punya akun? <a href="<?= site_url('register') ?>">Daftar Sekarang</a></p>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -17,9 +17,11 @@ class UserSeeder extends Seeder
         ]);
 
         $userModel->save([
-            'username' => 'userbaru',
+            'username' => 'user2',
             'password' => password_hash('user123', PASSWORD_DEFAULT),
             'role' => 'user'
         ]);
+
+        
     }
 }

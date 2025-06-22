@@ -8,18 +8,36 @@ class UserController extends BaseController {
 
     public function index() {
         $model = new BookModel();
-        $data['books'] = $model->findAll();
+        $keyword = $this->request->getGet('q');
+
+        if ($keyword) {
+            $data['books'] = $model->like('title', $keyword)->findAll();
+        } else {
+            $data['books'] = $model->findAll();
+        }
+
+        $data['q'] = $keyword; 
         echo view('user/book_list', $data);
     }
 
+
+
+
     public function detail($id) {
-        $model = new BookModel();
-        $data['book'] = $model->find($id);
-        if (!$data['book']) {
-            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Buku tidak ditemukan');
-        }
-        echo view('user/book_detail', $data);
+    $model = new BookModel();
+
+    $book = $model->find($id); // Tanpa filter user_id
+
+    if (!$book) {
+        throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Buku tidak ditemukan');
     }
+
+    $data['book'] = $book;
+    return view('user/book_detail', $data);
+}
+
+
+
     public function borrow($book_id) {
         $bookModel = new BookModel();
         $borrowModel = new BorrowHistoryModel();
@@ -38,13 +56,13 @@ class UserController extends BaseController {
         }
 
         $bookModel->update($book_id, ['status' => 'borrowed']);
-
         $borrowModel->save([
-            'user_id' => $user_id,
-            'book_id' => $book_id,
+            'user_id'     => $user_id,
+            'book_id'     => $book_id,
             'borrow_date' => date('Y-m-d H:i:s'),
             'return_date' => null,
         ]);
+
 
         return redirect()->to('/user')->with('success', 'Buku berhasil dipinjam');
     }
@@ -101,6 +119,24 @@ class UserController extends BaseController {
 
         return redirect()->to('/user/history')->with('success', 'Buku berhasil dikembalikan');
     }
+    public function borrowedBooks() {
+    $user_id = session()->get('user_id');
+    if (!$user_id) {
+        return redirect()->to('/login')->with('error', 'Harap login terlebih dahulu');
+    }
+
+    $borrowModel = new BorrowHistoryModel();
+
+    $data['books'] = $borrowModel
+        ->select('books.*, borrow_history.id as borrow_id, borrow_history.borrow_date')
+        ->join('books', 'books.id = borrow_history.book_id')
+        ->where('borrow_history.user_id', $user_id)
+        ->where('borrow_history.return_date', null)
+        ->findAll();
+
+    return view('user/borrowed_books', $data);
+}
+
 
 
 

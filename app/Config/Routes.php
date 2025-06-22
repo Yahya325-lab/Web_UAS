@@ -5,7 +5,7 @@ use CodeIgniter\Router\RouteCollection;
 /**
  * @var RouteCollection $routes
  */
-$routes->get('/', 'Home::index');
+$routes->get('/', 'AuthController::login');
 $routes->get('/', 'UserController::index');
 $routes->get('user', 'UserController::index');
 $routes->get('user/detail/(:num)', 'UserController::detail/$1');
@@ -21,3 +21,7 @@ $routes->post('login/process', 'AuthController::loginProcess');
 $routes->get('logout', 'AuthController::logout');
 $routes->get('user/return/(:num)', 'UserController::returnBook/$1');
 $routes->get('admin/delete/(:num)', 'AdminController::delete/$1');
+$routes->get('user/pinjam', 'UserController::borrowedBooks');
+$routes->get('user/returnBook/(:num)', 'UserController::returnBook/$1');
+$routes->get('register', 'AuthController::register');
+$routes->post('register/process', 'AuthController::registerProcess');

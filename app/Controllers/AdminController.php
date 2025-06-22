@@ -16,22 +16,24 @@ class AdminController extends BaseController {
 
     public function store() {
         $model = new BookModel();
+        $user_id = session()->get('user_id');
 
         $file = $this->request->getFile('image');
         $imageName = '';
         if ($file && $file->isValid()) {
             $imageName = $file->getRandomName();
-            $file->move(WRITEPATH . 'uploads', $imageName);
+            $file->move(FCPATH . 'uploads', $imageName);
         }
 
         $model->save([
-            'title' => $this->request->getPost('title'),
-            'author' => $this->request->getPost('author'),
-            'year' => $this->request->getPost('year'),
+            'title'     => $this->request->getPost('title'),
+            'author'    => $this->request->getPost('author'),
+            'year'      => $this->request->getPost('year'),
             'publisher' => $this->request->getPost('publisher'),
             'description' => $this->request->getPost('description'),
-            'image' => $imageName,
-            'status' => $this->request->getPost('status'),
+            'image'     => $imageName,
+            'status'    => $this->request->getPost('status'),
+            'user_id'   => $user_id, 
         ]);
 
         return redirect()->to('/admin');

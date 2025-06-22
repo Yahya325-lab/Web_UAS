@@ -47,6 +47,34 @@ class AuthController extends BaseController
             return redirect()->to('/user');
         }
     }
+    public function register()
+    {
+        return view('auth/signup');
+    }
+
+    public function registerProcess()
+    {
+        $validation = \Config\Services::validation();
+
+        $rules = [
+            'username' => 'required|is_unique[users.username]',
+            'password' => 'required|min_length[4]',
+            'confirm_password' => 'required|matches[password]'
+        ];
+
+        if (!$this->validate($rules)) {
+            return redirect()->back()->withInput()->with('errors', $validation->getErrors());
+        }
+
+        $userModel = new \App\Models\UserModel();
+        $userModel->insert([
+            'username' => $this->request->getPost('username'),
+            'password' => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT)
+        ]);
+
+        return redirect()->to('/login')->with('success', 'Akun berhasil dibuat, silakan login.');
+    }
+
 
     public function logout()
     {
